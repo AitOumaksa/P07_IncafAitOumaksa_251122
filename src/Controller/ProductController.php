@@ -23,7 +23,7 @@ class ProductController extends AbstractController
         return new JsonResponse($jsonPhoneList, Response::HTTP_OK, [], true);
     }
 
-    #[Route('/api/products/{id}', name: 'details.product', methods: ['GET'])]
+    #[Route('/api/products/{id}', name: 'product.details', methods: ['GET'])]
     public function getDetailBook(Phone $phone, SerializerInterface $serializer): JsonResponse {
         $context = SerializationContext::create()->setGroups(["getPhones"]);
         $jsonPhone = $serializer->serialize($phone, 'json', $context);

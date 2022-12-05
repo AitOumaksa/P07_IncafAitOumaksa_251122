@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Consumer;
 use App\Repository\ConsumerRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,5 +20,12 @@ class ConsumerController extends AbstractController
         $context = SerializationContext::create()->setGroups(["getConsumers"]);
         $jsonConsumerList = $serializer->serialize($consumerList, 'json', $context);
         return new JsonResponse($jsonConsumerList, Response::HTTP_OK, [], true);
+    }
+
+    #[Route('/api/consumers/{id}', name: 'consumer.details', methods: ['GET'])]
+    public function getDetailBook(Consumer $consumer , SerializerInterface $serializer): JsonResponse {
+        $context = SerializationContext::create()->setGroups(["getConsumers"]);
+        $jsonConsumer = $serializer->serialize($consumer, 'json', $context);
+        return new JsonResponse($jsonConsumer, Response::HTTP_OK, [], true);
     }
 }
