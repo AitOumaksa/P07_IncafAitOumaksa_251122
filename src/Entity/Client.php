@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use JMS\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
 class Client implements UserInterface, PasswordAuthenticatedUserInterface
@@ -15,9 +16,11 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["getConsumers" , "getClients"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Groups(["getClients"])]
     private ?string $email = null;
 
     #[ORM\Column]
@@ -27,12 +30,15 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Groups(["getClients"])]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["getConsumers" , "getClients"])]
     private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'client', targetEntity: Consumer::class)]
+    #[Groups(["getClients"])]
     private Collection $consumer;
 
     public function __construct()

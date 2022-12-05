@@ -23,9 +23,6 @@ class Consumer
     #[Groups(["getConsumers"])]
     private ?string $email = null;
 
-    #[ORM\ManyToOne(inversedBy: 'consumer')]
-    private ?Client $client = null;
-
     #[ORM\Column(length: 255)]
     #[Groups(["getConsumers"])]
     private ?string $city = null;
@@ -37,6 +34,10 @@ class Consumer
     #[ORM\Column(length: 255)]
     #[Groups(["getConsumers"])]
     private ?string $phoneNumber = null;
+
+    #[ORM\ManyToOne(inversedBy: 'consumer')]
+    #[Groups(["getConsumers" , "getClients"])]
+    private ?Client $client = null;
 
     public function getId(): ?int
     {
