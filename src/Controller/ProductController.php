@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Phone;
 use App\Repository\PhoneRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,5 +21,12 @@ class ProductController extends AbstractController
         $context = SerializationContext::create()->setGroups(["getPhones"]);
         $jsonPhoneList = $serializer->serialize($phoneList, 'json', $context);
         return new JsonResponse($jsonPhoneList, Response::HTTP_OK, [], true);
+    }
+
+    #[Route('/api/products/{id}', name: 'details.product', methods: ['GET'])]
+    public function getDetailBook(Phone $phone, SerializerInterface $serializer): JsonResponse {
+        $context = SerializationContext::create()->setGroups(["getPhones"]);
+        $jsonPhone = $serializer->serialize($phone, 'json', $context);
+        return new JsonResponse($jsonPhone, Response::HTTP_OK, [], true);
     }
 }
