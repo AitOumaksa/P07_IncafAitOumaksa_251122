@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ConsumerRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ConsumerRepository::class)]
 class Consumer
@@ -11,24 +12,30 @@ class Consumer
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["getConsumers"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["getConsumers"])]
     private ?string $fullName = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["getConsumers"])]
     private ?string $email = null;
 
     #[ORM\ManyToOne(inversedBy: 'consumer')]
     private ?Client $client = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["getConsumers"])]
     private ?string $city = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["getConsumers"])]
     private ?string $country = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["getConsumers"])]
     private ?string $phoneNumber = null;
 
     public function getId(): ?int
