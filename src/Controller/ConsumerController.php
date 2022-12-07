@@ -55,14 +55,10 @@ class ConsumerController extends AbstractController
         Request $request,
         SerializerInterface $serializer,
         EntityManagerInterface $entityManager,
-        UrlGeneratorInterface $urlGenerator,
-        ClientRepository $clientRepository
+        UrlGeneratorInterface $urlGenerator
     ): JsonResponse 
     {
         $consumer = $serializer->deserialize($request->getContent(), Consumer::class, 'json');
-
-        #$content = $request->toArray();
-        #$idClient = $content['clientId'] ?? -1;
         $consumer->setClient($this->getUser());
 
         $entityManager->persist($consumer);
@@ -71,7 +67,7 @@ class ConsumerController extends AbstractController
         $context = SerializationContext::create()->setGroups(["getConsumers"]);
         $jsonBook = $serializer->serialize($consumer, 'json', $context);
 
-        $location = $urlGenerator->generate('consumer.create', ['id' => $consumer->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+        $location = $urlGenerator->generate('consumer.details', ['id' => $consumer->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
 
         return new JsonResponse($jsonBook, Response::HTTP_CREATED, ["Location" => $location], true);
     }
