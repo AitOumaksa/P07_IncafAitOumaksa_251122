@@ -61,9 +61,9 @@ class ConsumerController extends AbstractController
     {
         $consumer = $serializer->deserialize($request->getContent(), Consumer::class, 'json');
 
-        $content = $request->toArray();
-        $idClient = $content['clientId'] ?? -1;
-        $consumer->setClient($clientRepository->find($idClient));
+        #$content = $request->toArray();
+        #$idClient = $content['clientId'] ?? -1;
+        $consumer->setClient($this->getUser());
 
         $entityManager->persist($consumer);
         $entityManager->flush();
