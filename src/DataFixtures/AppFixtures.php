@@ -7,9 +7,18 @@ use App\Entity\Consumer;
 use App\Entity\Phone;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
+
+    private UserPasswordHasherInterface $userPasswordHasher;
+ 
+    public function __construct(UserPasswordHasherInterface $userPasswordHasher)
+    {
+        $this->userPasswordHasher = $userPasswordHasher;
+    }
 
     /**
      * LOAD FIXTURE
@@ -28,20 +37,26 @@ class AppFixtures extends Fixture
                 'password' => 'password',
                 'name' => 'Willis',
             ],
+            1 => [
+                'email' => 'admin2@bilmo.com',
+                'role' => 'ROLE_ADMIN',
+                'password' => 'password',
+                'name' => 'Willis',
+            ]
         ];
 
         foreach ($user as $value) {
             $user = new Client();
             $user->setEmail($value['email']);
             $user->setRoles(array($value['role']));
-            $user->setPassword($value['password']);
+            $user->setPassword($this->userPasswordHasher->hashPassword($user, $value['password']));
             $user->setName($value['name']);
             $manager->persist($user);
         }
 
         $manager->flush();
 
-        // CUSTOMER
+        // CONSUMER
 
         $customer = [
             1 => [
