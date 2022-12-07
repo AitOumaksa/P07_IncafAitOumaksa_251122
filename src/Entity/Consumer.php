@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ConsumerRepository;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ConsumerRepository::class)]
 class Consumer
@@ -17,22 +18,32 @@ class Consumer
 
     #[ORM\Column(length: 255)]
     #[Groups(["getConsumers"])]
+    #[Assert\NotBlank(message: "Vous devez entrez un nom d'utilisateur")]
+    #[Assert\Length(min: 5, minMessage: "Veuillez avoir au moins 5 caractères", max: 50, maxMessage: "Le nom ne doit pas faire plus de 30 caractères")]
     private ?string $fullName = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(["getConsumers"])]
+    #[Assert\NotBlank(message: "Vous devez entrez un E-mail")]
+    #[Assert\Regex(
+        pattern : '/^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+\.[a-zA-Z]+$/',
+        message : "Veuillez renseigner un email valide. Exemple : 'exemple@exemple.exemple'"
+    )]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(["getConsumers"])]
+    #[Assert\NotBlank(message: "Vous devez entrez la ville")]
     private ?string $city = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(["getConsumers"])]
+    #[Assert\NotBlank(message: "Vous devez entrez le pays")]
     private ?string $country = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(["getConsumers"])]
+    #[Assert\NotBlank(message: "Vous devez entrez un numéro de télephone")]
     private ?string $phoneNumber = null;
 
     #[ORM\ManyToOne(inversedBy: 'consumer')]

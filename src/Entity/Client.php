@@ -8,9 +8,12 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
+#[UniqueEntity(fields: ['email'], message: 'Adresse E-mail existe déja')]
 class Client implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -21,6 +24,11 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 180, unique: true)]
     #[Groups(["getClients"])]
+    #[Assert\NotBlank(message: "Vous devez entrez un E-mail")]
+    #[Assert\Regex(
+        pattern : '/^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+\.[a-zA-Z]+$/',
+        message : "Veuillez renseigner un email valide. Exemple : 'exemple@exemple.exemple'"
+    )]
     private ?string $email = null;
 
     #[ORM\Column]
@@ -31,10 +39,17 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     #[Groups(["getClients"])]
+    #[Assert\NotBlank(message: "Le mot de passe est obligatoire")]
+    #[Assert\Regex(
+        pattern : '/^((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,64})+$/',
+        message : "Mot de passe doit contenir 8 caractères dont au minimum une majuscule, une minuscule, un caractère numérique et un caractère spécial"
+    )]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(["getConsumers" , "getClients"])]
+    #[Assert\NotBlank(message: "Veuillez renseigner ce champ")]
+    #[Assert\Length(min: 3, minMessage: "Veuillez avoir au moins 4 caractères", max: 50, maxMessage: "Le nom ne doit pas faire plus de 50 caractères")]
     private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'client', targetEntity: Consumer::class)]

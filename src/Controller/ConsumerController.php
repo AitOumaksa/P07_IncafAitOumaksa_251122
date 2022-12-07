@@ -16,6 +16,7 @@ use JMS\Serializer\SerializationContext;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ConsumerController extends AbstractController
 {
@@ -55,11 +56,19 @@ class ConsumerController extends AbstractController
         Request $request,
         SerializerInterface $serializer,
         EntityManagerInterface $entityManager,
-        UrlGeneratorInterface $urlGenerator
+        UrlGeneratorInterface $urlGenerator,
+        ValidatorInterface $validator
     ): JsonResponse 
     {
         $consumer = $serializer->deserialize($request->getContent(), Consumer::class, 'json');
         $consumer->setClient($this->getUser());
+
+        $errors = $validator->validate($consumer);
+
+        if ($errors->count() > 0) {
+            return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
+        }
+
 
         $entityManager->persist($consumer);
         $entityManager->flush();
