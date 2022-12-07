@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Client;
 use App\Entity\Consumer;
 use App\Repository\ClientRepository;
 use App\Repository\ConsumerRepository;
@@ -14,9 +15,16 @@ use JMS\Serializer\SerializerInterface;
 use JMS\Serializer\SerializationContext;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class ConsumerController extends AbstractController
 {
+
+    public function __construct(TokenStorageInterface $tokenStorage)
+	{
+		$this->userAuth = $tokenStorage->getToken()->getUser();
+	}
+
     #[Route('/api/consumers', name: 'consumer.list', methods: ['GET'])]
     public function getAllConsumers(ConsumerRepository $consumerRepository, SerializerInterface $serializer): JsonResponse
     {
@@ -49,9 +57,8 @@ class ConsumerController extends AbstractController
         EntityManagerInterface $entityManager,
         UrlGeneratorInterface $urlGenerator,
         ClientRepository $clientRepository
-    ): JsonResponse {
-
-        
+    ): JsonResponse 
+    {
         $consumer = $serializer->deserialize($request->getContent(), Consumer::class, 'json');
 
         $content = $request->toArray();
