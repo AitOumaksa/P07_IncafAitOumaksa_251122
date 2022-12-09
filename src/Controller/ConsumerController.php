@@ -2,9 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Client;
 use App\Entity\Consumer;
-use App\Repository\ClientRepository;
 use App\Repository\ConsumerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -20,11 +18,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ConsumerController extends AbstractController
 {
-
-    public function __construct(TokenStorageInterface $tokenStorage)
-	{
-		$this->userAuth = $tokenStorage->getToken()->getUser();
-	}
 
     #[Route('/api/consumers', name: 'consumer.list', methods: ['GET'])]
     public function getAllConsumers(ConsumerRepository $consumerRepository, SerializerInterface $serializer): JsonResponse
