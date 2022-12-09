@@ -11,9 +11,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use JMS\Serializer\SerializerInterface;
 use JMS\Serializer\SerializationContext;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ConsumerController extends AbstractController
@@ -39,6 +40,7 @@ class ConsumerController extends AbstractController
     #[Route('/api/consumers/{id}', name: 'consumer.delete', methods: ['DELETE'])]
     public function deleteConsumer(Consumer $consumer, EntityManagerInterface $entityManager): JsonResponse
     {
+        $this->denyAccessUnlessGranted('delete' , $consumer);
         $entityManager->remove($consumer);
         $entityManager->flush();
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
@@ -53,6 +55,7 @@ class ConsumerController extends AbstractController
         ValidatorInterface $validator
     ): JsonResponse 
     {
+        $this->denyAccessUnlessGranted('ROLE_CLIENT');
         $consumer = $serializer->deserialize($request->getContent(), Consumer::class, 'json');
         $consumer->setClient($this->getUser());
 

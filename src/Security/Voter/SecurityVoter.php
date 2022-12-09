@@ -6,16 +6,25 @@ use App\Entity\Client;
 use App\Entity\Consumer;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class SecurityVoter extends Voter
 {
+    public const MANAGE = 'delete';
+    private $security;
+
+    public function __construct(Security $security)
+    {
+        $this->security = $security;
+    }
+
     protected function supports(string $attribute, mixed $consumer): bool
     {
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
-        return in_array($attribute, ['MANAGE'])
-            && $consumer instanceof Client;
+        return in_array($attribute, [self::MANAGE])
+            && $consumer instanceof \App\Entity\Consumer;
     }
 
     protected function voteOnAttribute(string $attribute, mixed $consumer, TokenInterface $token): bool
@@ -25,10 +34,12 @@ class SecurityVoter extends Voter
         if (!$user instanceof UserInterface) {
             return false;
         }
+        if($this->security->isGranted('ROLE_ADMIN')) return true;
+        if(null === $consumer->getClient()) return false;
 
         // ... (check conditions and return true to grant permission) ...
         switch ($attribute) {
-            case 'MANAGE':
+            case self::MANAGE:
                 return $this->canManage($user, $consumer);
                 // logic to determine if the user can MANAGE
                 // return true or false
@@ -38,8 +49,9 @@ class SecurityVoter extends Voter
         return false;
     }
 
-    private function canManage($user, Consumer $consumer): bool
+    private function canManage(Client $user, Consumer $consumer): bool
     {
-        return $user === $consumer->getClient();
+        if($this->security->isGranted('ROLE_ADMIN')|| $user === $consumer->getClient()) return true;
+        return false;
     }
 }

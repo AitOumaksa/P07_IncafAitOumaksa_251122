@@ -32,14 +32,20 @@ class AppFixtures extends Fixture
 
         $user = [
             1 => [
-                'email' => 'admin@bilmo.com',
+                'email' => 'admin4@bilmo.com',
                 'role' => 'ROLE_ADMIN',
                 'password' => 'password',
                 'name' => 'Willis',
             ],
-            1 => [
-                'email' => 'admin2@bilmo.com',
+            2 => [
+                'email' => 'admin23@bilmo.com',
                 'role' => 'ROLE_ADMIN',
+                'password' => 'password',
+                'name' => 'Willis',
+            ],
+            3 => [
+                'email' => 'admin33@bilmo.com',
+                'role' => 'ROLE_CLIENT',
                 'password' => 'password',
                 'name' => 'Willis',
             ]
