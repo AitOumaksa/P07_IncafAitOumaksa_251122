@@ -7,17 +7,19 @@ use App\Repository\PhoneRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerInterface;
 use JMS\Serializer\SerializationContext;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class ProductController extends AbstractController
 {
     #[Route('/api/products', name: 'product.list' , methods: ['GET'])]
-    public function getAllProducts(PhoneRepository $phoneRepository , SerializerInterface $serializer): JsonResponse
+    public function getAllProducts(PhoneRepository $phoneRepository , SerializerInterface $serializer , Request $request): JsonResponse
     {
-        $phoneList = $phoneRepository->findAll();
+        $page = $request->get('page', 1);
+        $limit = $request->get('limit', 3);
+        $phoneList = $phoneRepository->findAllWithPagination($page, $limit);
         $context = SerializationContext::create()->setGroups(["getPhones"]);
         $jsonPhoneList = $serializer->serialize($phoneList, 'json', $context);
         return new JsonResponse($jsonPhoneList, Response::HTTP_OK, [], true);

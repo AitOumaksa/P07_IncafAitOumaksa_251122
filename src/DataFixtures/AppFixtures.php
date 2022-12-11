@@ -44,8 +44,8 @@ class AppFixtures extends Fixture
                 'name' => 'Willis',
             ],
             3 => [
-                'email' => 'admin33@bilmo.com',
-                'role' => 'ROLE_CLIENT',
+                'email' => 'admin333@bilmo.com',
+                'role' => '',
                 'password' => 'password',
                 'name' => 'Willis',
             ]
@@ -147,6 +147,55 @@ class AppFixtures extends Fixture
                 'reference' => 'B2483'
             ],
             5 => [
+                'name' => 'Galaxy zoom',
+                'price' => 10000,
+                'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce volutpat mauris est, ac pulvinar ante faucibus sed.',
+                'brand' => 'Samsung',
+                'reference' => 'A2483'
+            ],
+            6 => [
+                'name' => 'Galaxy zoom',
+                'price' => 10000,
+                'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce volutpat mauris est, ac pulvinar ante faucibus sed.',
+                'brand' => 'Samsung',
+                'reference' => 'A2483'
+            ],
+            7 => [
+                'name' => 'Galaxy zoom',
+                'price' => 10000,
+                'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce volutpat mauris est, ac pulvinar ante faucibus sed.',
+                'brand' => 'Samsung',
+                'reference' => 'A2483'
+            ],
+            8 => [
+                'name' => 'Galaxy zoom',
+                'price' => 10000,
+                'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce volutpat mauris est, ac pulvinar ante faucibus sed.',
+                'brand' => 'Samsung',
+                'reference' => 'A2483'
+            ],
+            9 => [
+                'name' => 'Galaxy zoom',
+                'price' => 10000,
+                'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce volutpat mauris est, ac pulvinar ante faucibus sed.',
+                'brand' => 'Samsung',
+                'reference' => 'A2483'
+            ],
+            10 => [
+                'name' => 'Galaxy zoom',
+                'price' => 10000,
+                'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce volutpat mauris est, ac pulvinar ante faucibus sed.',
+                'brand' => 'Samsung',
+                'reference' => 'A2483'
+            ],
+            11 => [
+                'name' => 'Galaxy zoom',
+                'price' => 10000,
+                'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce volutpat mauris est, ac pulvinar ante faucibus sed.',
+                'brand' => 'Samsung',
+                'reference' => 'A2483'
+            ],
+            12 => [
                 'name' => 'Galaxy zoom',
                 'price' => 10000,
                 'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce volutpat mauris est, ac pulvinar ante faucibus sed.',
