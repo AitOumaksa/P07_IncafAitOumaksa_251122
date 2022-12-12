@@ -6,6 +6,45 @@ use App\Repository\ConsumerRepository;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Hateoas\Configuration\Annotation as Hateoas;
+
+
+/**
+ *  @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "consumer.details",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *          absolute = true
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="getConsumers")
+ * )
+ * 
+ *  @Hateoas\Relation(
+ *     "create",
+ *     href = @Hateoas\Route(
+ *         "consumer.create",
+ *         absolute = true
+ *     ),
+ *     exclusion = @Hateoas\Exclusion(
+ *         groups = { "getConsumers" },
+ *         excludeIf = "expr(not is_granted('ROLE_ADMIN'))"
+ *     )
+ * )
+ *  @Hateoas\Relation(
+ *     "delete",
+ *     href = @Hateoas\Route(
+ *         "consumer.delete",
+ *         parameters = { "id" = "expr(object.getId())" },
+ *         absolute = true
+ *     ),
+ *     exclusion = @Hateoas\Exclusion(
+ *         groups = { "getConsumers" },
+ *         excludeIf = "expr(not is_granted('ROLE_ADMIN'))"
+ *     )
+ * )
+ *
+ */
 
 #[ORM\Entity(repositoryClass: ConsumerRepository::class)]
 class Consumer

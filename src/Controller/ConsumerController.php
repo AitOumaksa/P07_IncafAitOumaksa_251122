@@ -16,16 +16,24 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class ConsumerController extends AbstractController
 {
 
     #[Route('/api/consumers', name: 'consumer.list', methods: ['GET'])]
-    public function getAllConsumers(ConsumerRepository $consumerRepository, SerializerInterface $serializer): JsonResponse
+    public function getAllConsumers(ConsumerRepository $consumerRepository, SerializerInterface $serializer, Request $request, TagAwareCacheInterface $cache): JsonResponse
     {
-        $consumerList = $consumerRepository->findAll();
-        $context = SerializationContext::create()->setGroups(["getConsumers"]);
-        $jsonConsumerList = $serializer->serialize($consumerList, 'json', $context);
+        $page = $request->get('page', 1);
+        $limit = $request->get('limit', 3);
+        $idCache = "getConsumers-" . $page . "-" . $limit;
+        $jsonConsumerList = $cache->get($idCache, function (ItemInterface $item) use ($consumerRepository, $page, $limit, $serializer) {
+            $item->tag("consumersCache");
+            $consumerList = $consumerRepository->findAllWithPagination($page, $limit);
+            $context = SerializationContext::create()->setGroups(["getConsumers"]);
+            return $serializer->serialize($consumerList, 'json', $context);
+        });
         return new JsonResponse($jsonConsumerList, Response::HTTP_OK, [], true);
     }
 
@@ -38,11 +46,12 @@ class ConsumerController extends AbstractController
     }
 
     #[Route('/api/consumers/{id}', name: 'consumer.delete', methods: ['DELETE'])]
-    public function deleteConsumer(Consumer $consumer, EntityManagerInterface $entityManager): JsonResponse
+    public function deleteConsumer(Consumer $consumer, EntityManagerInterface $entityManager, TagAwareCacheInterface $cache): JsonResponse
     {
-        $this->denyAccessUnlessGranted('delete' , $consumer);
+        $this->denyAccessUnlessGranted('delete', $consumer);
         $entityManager->remove($consumer);
         $entityManager->flush();
+        $cache->invalidateTags(["consumersCache"]);
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
@@ -53,9 +62,8 @@ class ConsumerController extends AbstractController
         EntityManagerInterface $entityManager,
         UrlGeneratorInterface $urlGenerator,
         ValidatorInterface $validator
-    ): JsonResponse 
-    {
-        $this->denyAccessUnlessGranted('ROLE_CLIENT');
+    ): JsonResponse {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
         $consumer = $serializer->deserialize($request->getContent(), Consumer::class, 'json');
         $consumer->setClient($this->getUser());
 
