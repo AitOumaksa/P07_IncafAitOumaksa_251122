@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class SecurityVoter extends Voter
 {
-    public const MANAGE = 'delete';
+    public const MANAGE = 'manage';
     private $security;
 
     public function __construct(Security $security)

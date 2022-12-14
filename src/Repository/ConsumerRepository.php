@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Client;
 use App\Entity\Consumer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -39,8 +40,10 @@ class ConsumerRepository extends ServiceEntityRepository
         }
     }
 
-    public function findAllWithPagination($page, $limit) {
-        $qb = $this->createQueryBuilder('b')
+    public function findAllWithPagination(Client $client ,int $page ,int $limit) {
+        $qb = $this->createQueryBuilder('c')
+            ->andWhere('c.client = :client')
+            ->setParameter('client', $client)
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit);
         return $qb->getQuery()->getResult();

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Consumer;
 use App\Repository\ConsumerRepository;
+use App\Security\Voter\SecurityVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,10 +28,10 @@ class ConsumerController extends AbstractController
     {
         $page = $request->get('page', 1);
         $limit = $request->get('limit', 3);
-        $idCache = "getConsumers-" . $page . "-" . $limit;
+        $idCache = "getConsumers-". $this->getUser()->getId() . "-" . $page . "-" . $limit;
         $jsonConsumerList = $cache->get($idCache, function (ItemInterface $item) use ($consumerRepository, $page, $limit, $serializer) {
             $item->tag("consumersCache");
-            $consumerList = $consumerRepository->findAllWithPagination($page, $limit);
+            $consumerList = $consumerRepository->findAllWithPagination($this->getUser() ,$page, $limit);
             $context = SerializationContext::create()->setGroups(["getConsumers"]);
             return $serializer->serialize($consumerList, 'json', $context);
         });
@@ -40,6 +41,7 @@ class ConsumerController extends AbstractController
     #[Route('/api/consumers/{id}', name: 'consumer.details', methods: ['GET'])]
     public function getDetailConsumer(Consumer $consumer, SerializerInterface $serializer): JsonResponse
     {
+        $this->denyAccessUnlessGranted(SecurityVoter::MANAGE, $consumer);
         $context = SerializationContext::create()->setGroups(["getConsumers"]);
         $jsonConsumer = $serializer->serialize($consumer, 'json', $context);
         return new JsonResponse($jsonConsumer, Response::HTTP_OK, [], true);
@@ -48,7 +50,7 @@ class ConsumerController extends AbstractController
     #[Route('/api/consumers/{id}', name: 'consumer.delete', methods: ['DELETE'])]
     public function deleteConsumer(Consumer $consumer, EntityManagerInterface $entityManager, TagAwareCacheInterface $cache): JsonResponse
     {
-        $this->denyAccessUnlessGranted('delete', $consumer);
+        $this->denyAccessUnlessGranted(SecurityVoter::MANAGE, $consumer);
         $entityManager->remove($consumer);
         $entityManager->flush();
         $cache->invalidateTags(["consumersCache"]);
@@ -63,7 +65,6 @@ class ConsumerController extends AbstractController
         UrlGeneratorInterface $urlGenerator,
         ValidatorInterface $validator
     ): JsonResponse {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
         $consumer = $serializer->deserialize($request->getContent(), Consumer::class, 'json');
         $consumer->setClient($this->getUser());
 
