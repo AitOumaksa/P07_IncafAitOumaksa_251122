@@ -12,15 +12,14 @@ use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Contracts\Cache\ItemInterface;
-use Symfony\Contracts\Cache\TagAwareCacheInterface;
+
 use OpenApi\Attributes as OA;
 
 class ProductController extends AbstractController
 {
 
 
-     /**
+    /**
      * Get all products.
      */
     #[Route('/api/products', name: 'product.list', methods: ['GET'])]
@@ -45,21 +44,21 @@ class ProductController extends AbstractController
         schema: new OA\Schema(type: 'int')
     )]
     #[OA\Tag(name: 'Products')]
-    public function getAllProducts(PhoneRepository $phoneRepository, SerializerInterface $serializer, Request $request, TagAwareCacheInterface $cache): JsonResponse
+    public function getAllProducts(PhoneRepository $phoneRepository, SerializerInterface $serializer, Request $request): JsonResponse
     {
         $page = $request->get('page', 1);
         $limit = $request->get('limit', 3);
-        $idCache = "getPhones-" . $page . "-" . $limit;
-        $jsonPhoneList = $cache->get($idCache, function (ItemInterface $item) use ($phoneRepository, $page, $limit, $serializer) {
-            $item->tag("getPhones");
-            $phoneList = $phoneRepository->findAllWithPagination($page, $limit);
-            $context = SerializationContext::create()->setGroups(["getPhones"]);
-            return $serializer->serialize($phoneList, 'json', $context);
-        });
-        return new JsonResponse($jsonPhoneList, Response::HTTP_OK, [], true);
+        $phoneList = $phoneRepository->findAllWithPagination($page, $limit);
+        $context = SerializationContext::create()->setGroups(["getPhones"]);
+        $jsonPhoneList = $serializer->serialize($phoneList, 'json', $context);
+        $response = new JsonResponse($jsonPhoneList, Response::HTTP_OK, [], true);
+        $response->setPublic();
+        $response->setMaxAge(3600);
+        $response->headers->addCacheControlDirective('must-revalidate', true);
+        return $response;
     }
 
-     /**
+    /**
      * Get detail of products.
      */
     #[Route('/api/products/{id}', name: 'product.details', methods: ['GET'])]
@@ -67,6 +66,10 @@ class ProductController extends AbstractController
     {
         $context = SerializationContext::create()->setGroups(["getPhones"]);
         $jsonPhone = $serializer->serialize($phone, 'json', $context);
-        return new JsonResponse($jsonPhone, Response::HTTP_OK, [], true);
+        $response = new JsonResponse($jsonPhone, Response::HTTP_OK, [], true);
+        $response->setPublic();
+        $response->setMaxAge(3600);
+        $response->headers->addCacheControlDirective('must-revalidate', true);
+        return $response;
     }
 }
