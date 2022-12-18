@@ -67,3 +67,4 @@ Etape 2 :
        https://localhost:8000/api/doc
     
 
+## Vous êtes fin prêt pour tester votre API!
